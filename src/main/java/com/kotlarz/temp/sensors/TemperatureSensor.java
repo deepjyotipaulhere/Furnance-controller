@@ -2,12 +2,7 @@ package com.kotlarz.temp.sensors;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.springframework.jdbc.core.RowMapper;
-
-import com.pi4j.io.w1.W1Device;
 
 public class TemperatureSensor {
 	private int id;

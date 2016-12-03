@@ -17,24 +17,19 @@ public class TemperatureSensorRaspberry implements TemperatureReader {
 	@Override
 	public float getTemperatureFrom(TemperatureSensor sensor) throws SensorNotFoundException {
 		W1Master master = new W1Master();
-		float temperature = 0;
-		boolean found = false;
 
 		List<W1Device> deviceList = master.getDevices(TmpDS18B20DeviceType.FAMILY_CODE);
 		for (W1Device device : deviceList) {
 			if (device.getId().equals(sensor.getAddress())) {
-				found = true;
 				try {
-					temperature = Float.parseFloat(device.getValue());
+					return Float.parseFloat(device.getValue());
 				} catch (IOException ex) {
 					throw new RuntimeException(ex.getMessage());
 				}
 			}
 		}
-		if (found)
-			return temperature;
-		else
-			throw new SensorNotFoundException();
+		
+		throw new SensorNotFoundException();
 	}
 
 }
