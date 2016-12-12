@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,9 +63,18 @@ public class TemperatureWebController {
 	}
 
 	@GetMapping("/core")
-	public Map<String, Float> getCoreTemp() throws NumberFormatException, UnsupportedOperationException, IOException, InterruptedException {
+	public Map<String, Float> getCoreTemp()
+			throws NumberFormatException, UnsupportedOperationException, IOException, InterruptedException {
 		Map<String, Float> responseMap = new HashMap<String, Float>();
 		responseMap.put("CoreTemperature", SystemInfo.getCpuTemperature());
 		return responseMap;
+	}
+
+	@PutMapping("/putTest")
+	public Map<String, Object> makePut() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("Pierwszy", 1);
+
+		return map;
 	}
 }
