@@ -68,12 +68,4 @@ public class TemperatureWebController {
 		responseMap.put("CoreTemperature", SystemInfo.getCpuTemperature());
 		return responseMap;
 	}
-
-	@GetMapping("/putTest")
-	public Map<String, Object> makePut() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("Pierwszy", 1);
-
-		return map;
-	}
 }
