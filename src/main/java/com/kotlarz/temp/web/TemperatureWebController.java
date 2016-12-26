@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kotlarz.temp.dao.TempDao;
+import com.kotlarz.temp.services.TempSensorService;
+import com.kotlarz.ddns.services.DdnsService;
+import com.kotlarz.ddns.status.DdnsStatus;
+import com.kotlarz.logging.CustomLogger;
+import com.kotlarz.temp.TemperatureSample;
+import com.kotlarz.temp.domain.TemperatureSensorDomain;
 import com.kotlarz.temp.exceptions.SensorNotFoundException;
-import com.kotlarz.temp.sensors.TemperatureSample;
-import com.kotlarz.temp.sensors.TemperatureSensor;
 import com.kotlarz.temp.services.OneWireFinder;
 import com.kotlarz.temp.services.TemperatureReader;
 import com.pi4j.component.temperature.impl.TmpDS18B20DeviceType;
@@ -33,24 +36,29 @@ public class TemperatureWebController {
 	TemperatureReader raspTempReader;
 
 	@Autowired
+	DdnsService ddnsService;
+
+	@Autowired
 	OneWireFinder deviceFinder;
 
 	@Autowired
-	TempDao sensorRepository;
+	TempSensorService sensorRepository;
+
+	private static CustomLogger log = CustomLogger.getLogger(TemperatureWebController.class);
 
 	@GetMapping("/read")
 	public TemperatureSample getTemperature(@RequestParam(required = true, name = "name") String sensorName)
 			throws SensorNotFoundException {
-		TemperatureSensor sensor = sensorRepository.getByName(sensorName);
+		TemperatureSensorDomain sensor = sensorRepository.getByName(sensorName).get(0);
 		float temperature = tempReader.getTemperatureFrom(sensor);
 		return new TemperatureSample(sensor, temperature);
 	}
 
 	@GetMapping("/all")
 	public List<TemperatureSample> getAll() throws SensorNotFoundException {
-		List<TemperatureSensor> sensorList = sensorRepository.getAll();
+		List<TemperatureSensorDomain> sensorList = sensorRepository.getAll();
 		List<TemperatureSample> sampleList = new LinkedList<TemperatureSample>();
-		for (TemperatureSensor sensor : sensorList)
+		for (TemperatureSensorDomain sensor : sensorList)
 			sampleList.add(new TemperatureSample(sensor, tempReader.getTemperatureFrom(sensor)));
 
 		return sampleList;
@@ -67,5 +75,12 @@ public class TemperatureWebController {
 		Map<String, Float> responseMap = new HashMap<String, Float>();
 		responseMap.put("CoreTemperature", SystemInfo.getCpuTemperature());
 		return responseMap;
+	}
+
+	@GetMapping("/test")
+	public String getTest() throws Exception {
+		DdnsStatus status = ddnsService.update();
+		log.info("DDNS update status: " + status.toString());
+		return status.toString();
 	}
 }

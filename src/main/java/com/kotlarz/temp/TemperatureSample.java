@@ -1,20 +1,22 @@
-package com.kotlarz.temp.sensors;
+package com.kotlarz.temp;
+
+import com.kotlarz.temp.domain.TemperatureSensorDomain;
 
 public class TemperatureSample {
-	private TemperatureSensor sensor;
+	private TemperatureSensorDomain sensor;
 	private float temperature;
 
-	public TemperatureSample(TemperatureSensor sensor, float temperature) {
+	public TemperatureSample(TemperatureSensorDomain sensor, float temperature) {
 		super();
 		this.sensor = sensor;
 		this.temperature = temperature;
 	}
 
-	public TemperatureSensor getSensor() {
+	public TemperatureSensorDomain getSensor() {
 		return sensor;
 	}
 
-	public void setSensor(TemperatureSensor sensor) {
+	public void setSensor(TemperatureSensorDomain sensor) {
 		this.sensor = sensor;
 	}
 

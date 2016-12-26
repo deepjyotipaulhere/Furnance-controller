@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kotlarz.temp.domain.TemperatureSensorDomain;
 import com.kotlarz.temp.exceptions.SensorNotFoundException;
-import com.kotlarz.temp.sensors.TemperatureSensor;
 import com.pi4j.component.temperature.impl.TmpDS18B20DeviceType;
 import com.pi4j.io.w1.W1Device;
 import com.pi4j.io.w1.W1Master;
@@ -15,7 +15,7 @@ import com.pi4j.io.w1.W1Master;
 public class TemperatureSensorRaspberry implements TemperatureReader {
 
 	@Override
-	public float getTemperatureFrom(TemperatureSensor sensor) throws SensorNotFoundException {
+	public float getTemperatureFrom(TemperatureSensorDomain sensor) throws SensorNotFoundException {
 		W1Master master = new W1Master();
 
 		List<W1Device> deviceList = master.getDevices(TmpDS18B20DeviceType.FAMILY_CODE);
@@ -28,7 +28,7 @@ public class TemperatureSensorRaspberry implements TemperatureReader {
 				}
 			}
 		}
-		
+
 		throw new SensorNotFoundException();
 	}
 
