@@ -27,12 +27,15 @@ public class NoIpDdnsService implements DdnsService {
 
 	public static CustomLogger log = CustomLogger.getLogger(NoIpDdnsService.class);
 
-	private Properties getUrl(String urlStr) {
+	private Properties getUrl(String urlStr, String username, String password) {
 		Properties props = new Properties();
 		try {
 			URL url = new URL(urlStr);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Authorization", "Basic " + username + ":" + password);
+			conn.setRequestProperty("User-Agent", "Java NoIP Updated 1.0");
+
 			Integer responseCode = conn.getResponseCode();
 			props.setProperty("code", responseCode.toString());
 			log.info("HTTP DDNS code " + responseCode);
@@ -60,8 +63,8 @@ public class NoIpDdnsService implements DdnsService {
 	@Override
 	public DdnsStatus update() {
 		DdnsEntry config = ddnsDao.findByDdnsHost(NOIP);
-		Properties responseProp = getUrl("http://" + config.getUsername() + ":" + config.getPassword()
-				+ "@dynupdate.no-ip.com/nic/update?hostname=" + config.getHostname());
+		Properties responseProp = getUrl("http://dynupdate.no-ip.com/nic/update?hostname=" + config.getHostname(),
+				config.getUsername(), config.getPassword());
 
 		if (responseProp.containsKey("exception")) {
 			if (responseProp.containsKey("code")) {

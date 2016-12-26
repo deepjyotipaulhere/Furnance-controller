@@ -27,7 +27,7 @@ public class BeansConfig {
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
 		dataSource.setUsername("root");
 		dataSource.setPassword("root");
-		dataSource.setUrl("jdbc:mysql://localhost/raspberry_furnance?autoReconnect=true&useSSL=false");
+		dataSource.setUrl("jdbc:mysql://localhost/raspberry_furnance?autoReconnect=true&useSSL=false&characterEncoding=utf-8");
 		return dataSource;
 	}
 
