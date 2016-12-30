@@ -5,11 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@ComponentScan(basePackages = { "com.kotlarz" })
-@SpringBootApplication
-@EnableJpaRepositories(basePackages = { "com.kotlarz" })
 @EnableScheduling
+@SpringBootApplication
+@EnableWebSecurity(debug = true)
+@ComponentScan(basePackages = { "com.kotlarz" })
+@EnableJpaRepositories(basePackages = { "com.kotlarz" })
 public class App {
 
 	public static void main(String[] args) {

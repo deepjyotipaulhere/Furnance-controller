@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,8 @@ public class NoIpDdnsService implements DdnsService {
 			URL url = new URL(urlStr);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Authorization", "Basic " + username + ":" + password);
+			String encoded = encode(username + ":" + password);
+			conn.setRequestProperty("Authorization", "Basic " + encoded);
 			conn.setRequestProperty("User-Agent", "Java NoIP Updated 1.0");
 
 			Integer responseCode = conn.getResponseCode();
@@ -60,9 +63,16 @@ public class NoIpDdnsService implements DdnsService {
 		return props;
 	}
 
+	private String encode(String str) {
+		Encoder encoder = Base64.getEncoder();
+		byte[] encoded = encoder.encode(str.getBytes());
+		return new String(encoded);
+	}
+
 	@Override
 	public DdnsStatus update() {
 		DdnsEntry config = ddnsDao.findByDdnsHost(NOIP);
+
 		Properties responseProp = getUrl("http://dynupdate.no-ip.com/nic/update?hostname=" + config.getHostname(),
 				config.getUsername(), config.getPassword());
 
