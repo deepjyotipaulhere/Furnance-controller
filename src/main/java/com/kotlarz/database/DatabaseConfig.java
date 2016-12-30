@@ -32,7 +32,7 @@ public class DatabaseConfig {
 	private static String username = "root";
 	private static String password = "root";
 	private static String urlParameters = "autoReconnect=true&useSSL=false&characterEncoding=utf-8";
-	private static Integer port = 5432;
+	private static Integer port = 3306;
 	private static String driverClassName = "com.mysql.jdbc.Driver";
 
 	public static void initProperties(String propertiesFilePath) throws IOException, UnsupportedDatabaseException {
