@@ -34,33 +34,32 @@ public class DatabaseConfig {
 	private static String urlParameters = "autoReconnect=true&useSSL=false&characterEncoding=utf-8";
 	private static Integer port = 3306;
 	private static String driverClassName = "com.mysql.jdbc.Driver";
+	private static String dialect = "org.hibernate.dialect.MySQLDialect";
+	private static DatabaseType type = DatabaseType.MYSQL;
 
 	public static void initProperties(String propertiesFilePath) throws IOException, UnsupportedDatabaseException {
 		FileInputStream stream = new FileInputStream(propertiesFilePath);
 		Properties properties = new Properties();
 		properties.load(stream);
 
-		DatabaseType type = DatabaseType.valueOf(properties.getProperty("databaseType"));
-		host = properties.getProperty("host");
-		databaseName = properties.getProperty("databaseName");
-		username = properties.getProperty("username");
-		password = properties.getProperty("password");
-		port = Integer.parseInt(properties.getProperty("port"));
-
+		type = DatabaseType.valueOf(properties.getProperty("databaseType").toUpperCase());
+		String tempUrl = null;
+		String tempDriverClassName = null;
 		switch (type) {
 		case MYSQL: {
-			url = "jdbc:mysql";
-			driverClassName = "com.mysql.jdbc.Driver";
+			tempUrl = "jdbc:mysql";
+			tempDriverClassName = "com.mysql.jdbc.Driver";
 			break;
 		}
 		case POSTGRESQL: {
-			url = "jdbc:postgresql";
-			driverClassName = "org.postgresql.Driver";
+			tempUrl = "jdbc:postgresql";
+			dialect = "org.hibernate.dialect.PostgreSQL82Dialect";
+			tempDriverClassName = "org.postgresql.Driver";
 			break;
 		}
 		case SQLITE: {
-			url = "jdbc:mysql";
-			driverClassName = "com.mysql.jdbc.Driver";
+			tempUrl = "jdbc:sqlite";
+			tempDriverClassName = "org.sqlite.JDBC";
 			break;
 		}
 		default: {
@@ -70,10 +69,18 @@ public class DatabaseConfig {
 		}
 
 		try {
-			Class.forName(driverClassName);
+			Class.forName(tempDriverClassName);
 		} catch (ClassNotFoundException ex) {
-			throw new UnsupportedDatabaseException("Not found driver is system, class " + driverClassName, ex);
+			throw new UnsupportedDatabaseException("Not found driver in system for class " + tempDriverClassName, ex);
 		}
+
+		url = tempUrl;
+		driverClassName = tempDriverClassName;
+		host = properties.getProperty("host");
+		databaseName = properties.getProperty("databaseName");
+		username = properties.getProperty("username");
+		password = properties.getProperty("password");
+		port = Integer.parseInt(properties.getProperty("port"));
 	}
 
 	@Bean
@@ -97,6 +104,7 @@ public class DatabaseConfig {
 
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setGenerateDdl(true);
+		vendorAdapter.setDatabasePlatform(dialect);
 
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		factory.setJpaVendorAdapter(vendorAdapter);
